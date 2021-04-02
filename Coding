@@ -1,0 +1,52 @@
+#define BLYNK_PRINT Serial
+#define D4 2
+#define DHTPIN D4
+#define DHTTYPE DHT11
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include "DHT.h"
+DHT dht(DHTPIN, DHTTYPE);
+// You should get Auth Token in the Blynk App.
+// Go to the Project Settings (nut icon).
+char auth[] = "bDzmru_5eEbdyYL1MTg9T2615cDfGlr3";
+
+// Your WiFi credentials.
+// Set password to "" for open networks.
+char ssid[] = "Chutima";
+char pass[] = "chutima-1";
+
+void setup()
+{
+  // Debug console
+  Serial.begin(9600);
+
+  Blynk.begin(auth, ssid, pass, "blynk-cloud.com", 80);
+  // You can also specify server:
+  //Blynk.begin(auth, ssid, pass, "blynk-cloud.com", 80);
+  //Blynk.begin(auth, ssid, pass, IPAddress(192,168,1,100), 8080);
+  Serial.println();
+  Serial.println("Status\tHumidity (%)\tTemperature (C)\t(F)");
+  dht.begin();
+  //dht.setup(2); // data pin 2
+}
+
+void loop()
+{
+  //delay(dht.getMinimumSamplingPeriod());
+  int humidity = dht.readHumidity();
+  int temperature = dht.readTemperature();
+  //float humidity = dht.getHumidity(); // ดึงค่าความชื้น
+  //float temperature = dht.getTemperature(); // ดึงค่าอุณหภูมิ
+  //Serial.print(dht.getStatusString());
+  Serial.print("\t");
+  Serial.print(humidity, 1);
+  Serial.print("\t\t");
+  Serial.print(temperature, 1);
+  Serial.print("\t\t");
+  Serial.println("");
+  Blynk.run();
+  delay(100);
+  Blynk.virtualWrite(V0, temperature);
+  Blynk.virtualWrite(V1, humidity);
+
+}
